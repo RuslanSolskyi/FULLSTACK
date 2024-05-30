@@ -1,7 +1,7 @@
 import {
   Column,
   CreateDateColumn,
-  Entity, JoinColumn,
+  Entity, Index, JoinColumn,
   ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
@@ -23,7 +23,7 @@ export class Student  {
   @Column({ type: 'text', nullable: false })
   surname: string;
 
-  @Column({ type: 'text', unique: true, nullable: false })
+  @Column({ type: 'text', nullable: false })
   email: string;
 
   @Column({ type: 'text', nullable: false })

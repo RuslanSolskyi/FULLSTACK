@@ -1,13 +1,16 @@
-import {IsString, Length, Matches} from "class-validator";
+import {IsEmail, IsString, Length, Matches} from "class-validator";
+import {BeforeInsert} from "typeorm";
 
 export class CreateUserDto {
-    @IsString()
-    @Length(0, 300)
-    @Matches(/^[^\s@]+@([^\s@.,]+\.)+[^\s@.,]{2,}$/)
+    @IsEmail()
+    @Length(4, 300)
     email: string;
 
-    @IsString()
-    @Length(0, 300)
-    @Matches(/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%_*#?&])[A-Za-z\d@$_!%*#?&]{8,}$/)
+    @Length(6, 300)
     password: string;
+
+    // @IsString()
+    // @Length(5, 300)
+    // userName: string;
+    //
 }

@@ -6,29 +6,28 @@ import { AuthModule } from './auth/auth.module';
 import {ConfigModule, ConfigService} from "@nestjs/config";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { DatabaseModule } from './database/database.module';
+import { CategoryModule } from './category/category.module';
 
 @Module({
-  imports: [UserModule, AuthModule, ConfigModule.forRoot( { isGlobal: true }),
+  imports: [
+    ConfigModule.forRoot( { isGlobal: true }),
+    AuthModule, UserModule,
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'mysql',
-        host: 'localhost',
-        port: 3306,
-        username: 'root',
-        password: 'root',
-        database: 'test',
-        // host: configService.get('DB_HOST'),
-        // port: +configService.get('DB_PORT'),
-        // username: configService.get('DB_USER'),
-        // password: configService.get('DB_PASSWORD'),
-        // database: configService.get('DB_DATABASE'),
+        host: configService.get('DB_HOST'),
+        port: configService.get('DB_PORT'),
+        username: configService.get('DB_USER'),
+        password: configService.get('DB_PASSWORD'),
+        database: configService.get('DB_DATABASE'),
         entities: [__dirname + '/**/*.entity{.js, .ts}'],
         synchronize: true,
       }),
       inject: [ConfigService],
     }),
     DatabaseModule,
+    CategoryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
