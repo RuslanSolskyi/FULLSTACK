@@ -7,6 +7,7 @@ import {ConfigModule, ConfigService} from "@nestjs/config";
 import {TypeOrmModule} from "@nestjs/typeorm";
 import { DatabaseModule } from './database/database.module';
 import { CategoryModule } from './category/category.module';
+import { TransactionModule } from './transaction/transaction.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CategoryModule } from './category/category.module';
     }),
     DatabaseModule,
     CategoryModule,
+    TransactionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

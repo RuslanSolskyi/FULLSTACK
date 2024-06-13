@@ -1,75 +1,80 @@
 import {BadRequestException, Injectable, NotFoundException} from '@nestjs/common';
 import { CreateCategoryDto } from './dto/create-category.dto';
 import { UpdateCategoryDto } from './dto/update-category.dto';
-import {InjectRepository} from "@nestjs/typeorm";
-import {Category} from "./entities/category.entity";
+import {CategoryEntity} from "./entities/category.entity";
 import {Repository} from "typeorm";
+import {InjectRepository} from "@nestjs/typeorm";
 
 @Injectable()
 export class CategoryService {
-  constructor(
-      @InjectRepository(Category)
-      private readonly categoryRepository:Repository<Category>,
-  ) {}
-  async create(createCategoryDto: CreateCategoryDto, id: number) {
-    const isExist = await this.categoryRepository.findBy({
-      user: {id},
-      title: createCategoryDto.title
-    })
+    constructor(
+        @InjectRepository(CategoryEntity)
+        private readonly categoryRepository:Repository<CategoryEntity>,
+    ) {}
+    async create(createCategoryDto: CreateCategoryDto, id: number) {
+        const isExist = await this.categoryRepository.findBy({
+            user: {id},
+            title: createCategoryDto.title
+        })
 
-    if(isExist.length) throw new BadRequestException('This category alreade exist')
+        if(isExist.length) throw new BadRequestException('This category alreade exist')
 
-    const newCategory = {
-      title: createCategoryDto.title,
-      user: {
-        id,
-      },
+        const newCategory = {
+            title: createCategoryDto.title,
+            user: {
+                id,
+            },
+        }
+
+        return await this.categoryRepository.save(newCategory)
     }
 
-    return await this.categoryRepository.save(newCategory)
-  }
+    // async findAll(): Promise<CategoryEntity[]> {
+    //     return this.categoryRepository.find({
+    //         relations: ['user'], // Тут вказуємо відношення, які хочемо завантажити
+    //     });
+    // }
+    async findAll(id: number) {
 
-  async findAll(id: number) {
+        return await this.categoryRepository.find({
+            where: {
+                user: { id },
+            },
+            relations: {
+                transactions: true,
+            },
+        })
+    }
 
-    return await this.categoryRepository.find({
-      where: {
-        user: { id },
-      },
-      relations: {
-        transactions: true,
-      },
-    })
-  }
+    async findOne(id: number) {
+        const category = await this.categoryRepository.findOne({
+            where: { id },
+            relations: {
+                user: true,
+                transactions: true,
+            },
+        })
 
-  async findOne(id: number) {
-    const category = await this.categoryRepository.findOne({
-      where: { id },
-      relations: {
-        user: true,
-        transactions: true,
-      },
-    })
+        if (!category) throw new NotFoundException('Category not found')
 
-    if (!category) throw new NotFoundException('Category not found')
+        return category
+    }
 
-    return category
-  }
+    async update(id: number, updateCategoryDto: UpdateCategoryDto) {
+        const category = await this.categoryRepository.findOne({
+            where: {id},
+        })
 
-  async update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    const category = await this.categoryRepository.findOne({
-      where: {id},
-    })
+        if(!category) throw new NotFoundException('Category not found')
+        return await this.categoryRepository.update(id, updateCategoryDto)
+    }
 
-    if(!category) throw new NotFoundException('Category not found')
-    return await this.categoryRepository.update(id, updateCategoryDto)
-  }
+    async remove(id: number) {
+        const category = await this.categoryRepository.findOne({
+            where: {id},
+        })
 
-  async remove(id: number) {
-    const category = await this.categoryRepository.findOne({
-      where: {id},
-    })
-
-    if(!category) throw new NotFoundException('Category not found')
-    return await this.categoryRepository.delete(id)
-  }
+        if(!category) throw new NotFoundException('Category not found')
+        return await this.categoryRepository.delete(id)
+    }
 }

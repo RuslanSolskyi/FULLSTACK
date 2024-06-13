@@ -13,7 +13,7 @@ import { EStatus } from './enums/status.enum';
 import {User} from "../../user/entities/user.entity";
 
 @Entity('student')
-export class Student  {
+export class StudentEntity  {
   @PrimaryGeneratedColumn({ name: 'student_id'})
   id: string;
 
